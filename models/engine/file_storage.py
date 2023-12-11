@@ -16,11 +16,18 @@ class FileStorage:
         "BaseModel": "models.base_model",
         "User": "models.user",
         "Place":"models.place", 
-        "State": "models.place", 
+        "State": "models.state", 
         "City":"models.city", 
         "Amenity":"models.amenity",
         "Review" : "models.review"
     }
+    classes = {"BaseModel": "models.base_model",
+        "User": "User",
+        "Place":"Place", 
+        "State": "State", 
+        "City":"City", 
+        "Amenity":"Amenity",
+        "Review" : "Review"}
     
     def import_class(cls, class_name):
         """Dynamically imports and returns the specified class."""
