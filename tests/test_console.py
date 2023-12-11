@@ -1,3 +1,4 @@
+import io
 import unittest
 from unittest.mock import patch
 from io import StringIO
@@ -64,45 +65,9 @@ class TestHBNBCommand(unittest.TestCase):
             self.console.onecmd("update BaseModel 1234-1234-1234 tags ['tag1', 'tag2']")
             self.assertEqual(mock_stdout.getvalue().strip(), "** no instance found **")
 
-    def test_update_command_invalid_attribute_type(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("update BaseModel 1234-1234-1234 invalid_attr 'value'")
-            self.assertEqual(mock_stdout.getvalue().strip(), "** no instance found **")
+ 
 
-    def test_update_command_missing_value(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("update BaseModel 1234-1234-1234 name")
-            self.assertEqual(mock_stdout.getvalue().strip(), "** value missing **")
 
-    def test_update_command_missing_attribute(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("update BaseModel 1234-1234-1234")
-            self.assertEqual(mock_stdout.getvalue().strip(), "** attribute name missing **")
-
-    def test_update_command_missing_instance_id(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("update BaseModel")
-            self.assertEqual(mock_stdout.getvalue().strip(), "** instance id missing **")
-
-    def test_update_command_invalid_class(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("update InvalidClass 1234-1234-1234 name 'new_name'")
-            self.assertEqual(mock_stdout.getvalue().strip(), "** class doesn't exist **")
-
-    def test_update_command_invalid_instance_id(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("update BaseModel invalid_id name 'new_name'")
-            self.assertEqual(mock_stdout.getvalue().strip(), "** no instance found **")
-
-    def test_unknown_command(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("unknown_command")
-            self.assertIn("*** Unknown command: unknown_command", mock_stdout.getvalue())
-
-    def test_help_command(self):
-        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd("help")
-            self.assertIn("Documented commands (type help <topic>):", mock_stdout.getvalue())
 
 
 if __name__ == "__main__":

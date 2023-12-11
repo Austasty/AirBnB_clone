@@ -16,11 +16,12 @@ class HBNBCommand(cmd.Cmd):
 
     def do_quit(self, arg):
         """Exit the program"""
+        print("Bye!")
         return True
 
     def do_EOF(self, arg):
         """Exit the program"""
-        print()
+        print("Bye!")
         return True
 
     def emptyline(self):
@@ -125,9 +126,10 @@ class HBNBCommand(cmd.Cmd):
         if len(args) < 3:
             print("** attribute name missing **")
             return
-        if len(args) < 4:
+        elif len(args) < 4:
             print("** value missing **")
             return
+
 
         instance = instances[key]
         attribute_name = args[2]
