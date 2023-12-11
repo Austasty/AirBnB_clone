@@ -1,112 +1,164 @@
 import unittest
-from datetime import datetime
-from unittest.mock import patch
 from models.base_model import BaseModel
 
-
 class TestBaseModel(unittest.TestCase):
-    def setUp(self):
-        """Set up a new instance of BaseModel for testing."""
-        self.base_model = BaseModel()
+    """
+    Test cases for the BaseModel class.
+    """
 
-    def test_init(self):
-        """Test the initialization of BaseModel."""
-        self.assertIsNotNone(self.base_model.id)
-        self.assertIsInstance(self.base_model.created_at, datetime)
-        self.assertIsInstance(self.base_model.updated_at, datetime)
+    def test_create_instance(self):
+        """
+        Test creating an instance of BaseModel.
+        """
+        obj = BaseModel()
+        self.assertIsInstance(obj, BaseModel)
 
-    def test_str(self):
-        """Test the string representation (__str__) of BaseModel."""
-        expected_str = f"[{self.base_model.__class__.__name__}]({self.base_model.id}) {self.base_model.__dict__}"
-        self.assertEqual(str(self.base_model), expected_str)
+    def test_id_generation(self):
+        """
+        Test the generation of unique IDs.
+        """
+        obj1 = BaseModel()
+        obj2 = BaseModel()
+        self.assertNotEqual(obj1.id, obj2.id)
 
-    @patch('datetime.datetime')
-    def test_save(self, mock_datetime):
-        """Test the save method of BaseModel."""
-        mock_datetime.today.return_value = datetime(2023, 1, 1)
-        self.base_model.save()
-        self.assertEqual(self.base_model.updated_at, datetime(2023, 1, 1))
+    def test_string_representation(self):
+        """
+        Test the string representation of
+        the BaseModel instance.
+        """
+        obj = BaseModel()
+        expected_str = f"[BaseModel]({obj.id}) {obj.__dict__}"
+        self.assertEqual(str(obj), expected_str)
 
-    def test_to_dict(self):
-        """Test the to_dict method of BaseModel."""
-        expected_dict = {
-            'id': self.base_model.id,
-            'created_at': self.base_model.created_at.isoformat(),
-            'updated_at': self.base_model.updated_at.isoformat(),
-            '__class__': 'BaseModel'
-        }
-        self.assertDictEqual(self.base_model.to_dict(), expected_dict)
-    
-    def test_save_updates_updated_at(self):
-        """Test that calling save updates the 'updated_at' attribute."""
-        initial_updated_at = self.base_model.updated_at
-        self.base_model.save()
-        self.assertNotEqual(self.base_model.updated_at, initial_updated_at)
+    def test_save_method(self):
+        """
+        Test the save method to update the 'updated_at' attribute.
+        """
+        obj = BaseModel()
+        original_updated_at = obj.updated_at
+        obj.save()
+        self.assertGreater(obj.updated_at, original_updated_at)
 
-    def test_to_dict_with_custom_attributes(self):
-        """Test to_dict method when custom attributes are added."""
-        self.base_model.custom_attr = 'test_value'
-        expected_dict = {
-            'id': self.base_model.id,
-            'created_at': self.base_model.created_at.isoformat(),
-            'updated_at': self.base_model.updated_at.isoformat(),
-            '__class__': 'BaseModel',
-            'custom_attr': 'test_value'
-        }
-        self.assertDictEqual(self.base_model.to_dict(), expected_dict)
+    def test_to_dict_method(self):
+        """
+        Test the to_dict method to ensure proper dictionary format.
+        """
+        obj = BaseModel()
+        obj_dict = obj.to_dict()
+        self.assertIsInstance(obj_dict, dict)
+        self.assertEqual(obj_dict["__class__"], "BaseModel")
 
-    def test_to_dict_isoformat(self):
-        """Test that the 'created_at' and 'updated_at' values are in ISO format."""
-        iso_created_at = self.base_model.created_at.isoformat()
-        iso_updated_at = self.base_model.updated_at.isoformat()
-        object_dict = self.base_model.to_dict()
-        self.assertEqual(object_dict['created_at'], iso_created_at)
-        self.assertEqual(object_dict['updated_at'], iso_updated_at)
+    def test_to_dict_with_custom_attribute(self):
+        """
+        Test to_dict method with a custom attribute.
+        """
+        obj = BaseModel(custom_attr="test")
+        obj_dict = obj.to_dict()
+        self.assertIn("custom_attr", obj_dict)
+        self.assertEqual(obj_dict["custom_attr"], "test")
 
-    def test_to_dict_does_not_modify_object(self):
-        """Test that calling to_dict does not modify the BaseModel instance."""
-        initial_dict = self.base_model.__dict__.copy()
-        self.base_model.to_dict()
-        self.assertEqual(self.base_model.__dict__, initial_dict)
+    def test_initialize_with_custom_dates(self):
+        """
+        Test initialization with custom created_at and updated_at dates.
+        """
+        custom_created_at = "2023-01-01T12:00:00.000000"
+        custom_updated_at = "2023-02-01T12:30:00.000000"
+        obj = BaseModel(created_at=custom_created_at, updated_at=custom_updated_at)
+        self.assertEqual(obj.created_at.isoformat(), custom_created_at)
+        self.assertEqual(obj.updated_at.isoformat(), custom_updated_at)
 
-    def test_create_instance_from_dict(self):
-        """Test creating a new instance from a dictionary."""
-        obj_dict = {
-            'id': 'custom_id',
-            'created_at': '2023-01-01T00:00:00',
-            'updated_at': '2023-01-01T01:00:00',
-            '__class__': 'BaseModel',
-            'custom_attr': 'test_value'
-        }
-        new_instance = BaseModel(**obj_dict)
+    def test_save_after_init_with_custom_dates(self):
+        """
+        Test save method after initialization with custom dates.
+        """
+        custom_created_at = "2023-01-01T12:00:00.000000"
+        obj = BaseModel(created_at=custom_created_at)
+        original_updated_at = obj.updated_at
+        obj.save()
+        self.assertGreater(obj.updated_at, original_updated_at)
 
-        # Convert the expected datetime to ISO format for comparison
-        expected_created_at = '2023-01-01T00:00:00'
-        expected_updated_at = '2023-01-01T01:00:00'
+    def test_initialize_with_invalid_date_format(self):
+        """
+        Test initialization with an invalid date format.
+        """
+        invalid_date_format = "2023/01/01 12:00:00"
+        with self.assertRaises(ValueError):
+            BaseModel(created_at=invalid_date_format)
 
-        self.assertEqual(new_instance.id, 'custom_id')
-        self.assertEqual(new_instance.custom_attr, 'test_value')
-        
-        # Convert the created_at and updated_at attributes to ISO format for comparison
-        self.assertEqual(new_instance.created_at.isoformat(), expected_created_at)
-        self.assertEqual(new_instance.updated_at.isoformat(), expected_updated_at)
+    def test_initialize_with_unknown_keyword_argument(self):
+        """
+        Test initialization with an unknown keyword argument.
+        """
+        with self.assertRaises(TypeError) as context:
+            BaseModel(unknown_attr="test")
 
+        # Check that the correct exception was raised
+        self.assertEqual(str(context.exception),
+                         "BaseModel() got an unexpected\
+                         keyword argument 'unknown_attr'")
 
-    def test_create_instance_from_empty_dict(self):
-        """Test creating a new instance from an empty dictionary."""
-        obj_dict = {
-            '__class__': 'BaseModel'
-        }
-        new_instance = BaseModel(**obj_dict)
+    def test_save_after_update_object_attributes(self):
+        """
+        Test save method after updating object attributes.
+        """
+        obj = BaseModel()
+        obj.custom_attr = "test"
+        original_updated_at = obj.updated_at
+        obj.save()
+        self.assertGreater(obj.updated_at, original_updated_at)
 
-        self.assertIsNotNone(new_instance.id)
-        self.assertIsInstance(new_instance.created_at, datetime)
-        self.assertIsInstance(new_instance.updated_at, datetime)
+    def test_save_after_remove_object_attribute(self):
+        """
+        Test save method after removing object attribute.
+        """
+        obj = BaseModel()
+        obj.custom_attr = "test"
+        original_updated_at = obj.updated_at
+        del obj.custom_attr
+        obj.save()
+        self.assertGreater(obj.updated_at, original_updated_at)
 
-        self.assertEqual(new_instance.__class__.__name__, 'BaseModel')
+    def test_save_after_change_object_attribute(self):
+        """
+        Test save method after changing object attribute.
+        """
+        obj = BaseModel()
+        obj.custom_attr = "test"
+        original_updated_at = obj.updated_at
+        obj.custom_attr = "new_value"
+        obj.save()
+        self.assertGreater(obj.updated_at, original_updated_at)
 
+    def test_initialize_and_to_dict_with_all_attributes(self):
+        """
+        Test initialization and to_dict method with all attributes.
+        """
+        custom_created_at = "2023-01-01T12:00:00.000000"
+        custom_updated_at = "2023-02-01T12:30:00.000000"
+        obj = BaseModel(
+            custom_attr="test",
+            created_at=custom_created_at,
+            updated_at=custom_updated_at
+        )
+        obj_dict = obj.to_dict()
+        self.assertEqual(obj_dict["custom_attr"], "test")
+        self.assertEqual(obj_dict["created_at"], custom_created_at)
+        self.assertEqual(obj_dict["updated_at"], custom_updated_at)
 
-
+    def test_save_after_init_with_all_attributes(self):
+        """
+        Test save method after initialization with all attributes.
+        """
+        custom_created_at = "2023-01-01T12:00:00.000000"
+        custom_updated_at = "2023-02-01T12:30:00.000000"
+        obj = BaseModel(
+            custom_attr="test",
+            created_at=custom_created_at,
+            updated_at=custom_updated_at
+        )
+        original_updated_at = obj.updated_at
+        obj.save()
+        self.assertGreater(obj.updated_at, original_updated_at)
 
 
 if __name__ == '__main__':

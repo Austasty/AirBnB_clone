@@ -1,4 +1,7 @@
+#!/usr/bin/python3
+"""Amenity Model Definition"""
 from models.base_model import BaseModel
+
 
 class Amenity(BaseModel):
     """Amenity class that inherits from he BaseModel"""

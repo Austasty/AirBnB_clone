@@ -7,6 +7,7 @@ import cmd
 from models import storage
 from models.base_model import BaseModel
 
+
 class HBNBCommand(cmd.Cmd):
     """
     HBNBCommand class for the command interpreter
@@ -26,9 +27,9 @@ class HBNBCommand(cmd.Cmd):
         """Do nothing on empty input line"""
         pass
 
-
     def do_create(self, arg):
-        """Creates a new instance of a specified class, saves it, and prints the id"""
+        """Creates a new instance of a specified
+           class, saves it, and prints the id """
         if not arg:
             print("** class name missing **")
             return
@@ -96,7 +97,13 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
 
-        print([str(obj) for key, obj in instances.items() if key.split('.')[0] == args[0]])
+        print(
+            [
+                str(obj)
+                for key, obj in instances.items()
+                if key.split('.')[0] == args[0]
+            ]
+        )
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
@@ -128,6 +135,7 @@ class HBNBCommand(cmd.Cmd):
 
         setattr(instance, attribute_name, eval(attribute_value))
         storage.save()
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
