@@ -13,7 +13,13 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
     __class_modules = {
-        "BaseModel": "models.base_model"
+        "BaseModel": "models.base_model",
+        "User": "models.user",
+        "Place":"models.place", 
+        "State": "models.place", 
+        "City":"models.city", 
+        "Amenity":"models.amenity",
+        "Review" : "models.review"
     }
     
     def import_class(cls, class_name):
