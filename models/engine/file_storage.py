@@ -14,7 +14,12 @@ class FileStorage:
     __objects = {}
     __class_modules = {
         "BaseModel": "models.base_model",
-        "User": "models.user"
+        "User": "models.user",
+        "Place": "models.place",
+        "State" :"models.state",
+        "City" : "models.city",
+        "Amenity":"models.amenity",
+        "Review" : "models.Review"
     }
     
     def import_class(cls, class_name):
