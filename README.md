@@ -1,4 +1,4 @@
-# Solutions to Python related tasks
+# Solutions to Python related task
 This repo is for the second sprint of the ALX Software Engineering Programme.
 During this sprint we will be learning and practicing AIR BnB (THE CONSOLE)
 Python is the primary language we are going to be using.
